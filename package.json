@@ -1,0 +1,53 @@
+{
+  "name": "project-test",
+  "version": "1.0.0",
+  "description": "nodejs 백엔드 고급 프로젝트",
+  "type": "module",
+  "scripts": {
+    "start": "node ./build/main.js",
+    "build": "tsc",
+    "dev": "cross-env NODE_ENV=development nodemon --watch src --exec ts-node src/main.ts",
+    "prepare": "husky",
+    "format": "prettier . --write",
+    "test:db": "dotenv -e .env.test -- prisma migrate deploy",
+    "test": "dotenv -e .env.test -- cross-env NODE_ENV=test jest",
+    "test:unit": "npm run test -- src/test/unit --runInBand",
+    "test:e2e": "npm run test -- src/test/e2e --runInBand",
+    "test:it": "npm run test:db && npm run test -- --runInBand",
+    "format:check": "prettier . --check",
+    "type:check": "tsc --noEmit"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,md,yml,yaml,css,scss}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.0.3",
+    "cross-env": "^10.1.0",
+    "dotenv-cli": "^11.0.0",
+    "husky": "^9.1.7",
+    "jest": "^30.2.0",
+    "lint-staged": "^16.2.7",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.7.4",
+    "prisma": "^6.19.1",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1",
+    "zod": "^4.3.2"
+  }
+}
