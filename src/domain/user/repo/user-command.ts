@@ -257,7 +257,11 @@ export const createUserCommandRepo = (prismaClient: PrismaClient): IUserCommandR
 
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         const target = (err.meta as any)?.target;
-
+        if (target?.includes('email')) {
+          throw TechnicalException({
+            type: TechnicalExceptionType.UNIQUE_VIOLATION_EMAIL,
+          });
+        }
         if (target?.includes('username')) {
           throw TechnicalException({
             type: TechnicalExceptionType.UNIQUE_VIOLATION_USERNAME,

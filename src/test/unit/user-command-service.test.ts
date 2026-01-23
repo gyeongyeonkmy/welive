@@ -1,27 +1,36 @@
-import { IApartmentCommandRepo } from '../../apartment/interface/i-apartment-command';
+import { IApartmentCommandRepo } from '../../domain/apartment/interface/i-apartment-command';
 import {
   SignUpResidentAccountReqDto,
   UpdatePasswordReqDto,
   UpdateResidentAccountJoinedStatusesReqDto,
   UpdateResidentAccountJoinedStatusReqDto,
-} from '../dto/user-request';
-import { IUserCommandRepo } from '../interface/i-user-command-repo';
-import { IHashManager } from '../../../shared/interface/i-bcrypt-hash-manager';
-import { IUnitOfWork } from '../../../shared/interface/i-unit-of-work';
-import { createUserCommandService, UserCommandService } from '../service/user-command';
-import { NotJoinedResidentEntity, NotJoinedResidentProps } from '../entity/not-joined-resident';
-import { BusinessExceptionType } from '../../../shared/exception/business-exception/exception-info';
-import { BaseUserEntity, Role, Status } from '../entity/base-user';
-import { TechnicalExceptionType } from '../../../shared/exception/technical-exception/exception-info';
-import { TechnicalException } from '../../../shared/exception/technical-exception/technical-exception';
-import { ResidentAccountEntity, ResidentAccountProps } from '../entity/resident-account';
-import { AdminAccountEntity, AdminAccountProps } from '../entity/admin-account';
+} from '../../domain/user/dto/user-request';
+import { IUserCommandRepo } from '../../domain/user/interface/i-user-command-repo';
+import { IHashManager } from '../../shared/interface/i-bcrypt-hash-manager';
+import { IUnitOfWork } from '../../shared/interface/i-unit-of-work';
+import {
+  createUserCommandService,
+  UserCommandService,
+} from '../../domain/user/service/user-command';
+import {
+  NotJoinedResidentEntity,
+  NotJoinedResidentProps,
+} from '../../domain/user/entity/not-joined-resident';
+import { BusinessExceptionType } from '../../shared/exception/business-exception/exception-info';
+import { BaseUserEntity, Role, Status } from '../../domain/user/entity/base-user';
+import { TechnicalExceptionType } from '../../shared/exception/technical-exception/exception-info';
+import { TechnicalException } from '../../shared/exception/technical-exception/technical-exception';
+import {
+  ResidentAccountEntity,
+  ResidentAccountProps,
+} from '../../domain/user/entity/resident-account';
+import { AdminAccountEntity, AdminAccountProps } from '../../domain/user/entity/admin-account';
 import {
   CreateResidentReqDto,
   DeleteResidentReqDto,
   UpdateResidentReqDto,
-} from '../dto/resident-user-response';
-import * as userMapper from '../user-mapper';
+} from '../../domain/user/dto/resident-user-response';
+import * as userMapper from '../../domain/user/user-mapper';
 
 describe('user service 유닛 테스트', () => {
   let mockUow: IUnitOfWork;

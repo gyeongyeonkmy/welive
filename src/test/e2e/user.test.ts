@@ -1,17 +1,19 @@
-import { Apartment, PrismaClient, User } from '@prisma/client';
+import { PrismaClient, Apartment, User } from '@prisma/client';
+import { randomUUID } from 'crypto';
 import { Application } from 'express';
 import request from 'supertest';
-import { BasePrismaClient } from '../../../shared/base-command-repo';
-import { TokenUtil } from '../../../shared/utils/token-manager';
-import { createInjector } from '../../../injector';
-import { randomUUID } from 'crypto';
-import { userInclude } from '../user-mapper';
-import { SignUpResidentAccountReqDto, UpdatePasswordReqDto } from '../dto/user-request';
+import { CreateResidentReqDto } from '../../domain/user/dto/resident-user-response';
+import {
+  SignUpResidentAccountReqDto,
+  UpdatePasswordReqDto,
+} from '../../domain/user/dto/user-request';
+import { userInclude } from '../../domain/user/user-mapper';
+import { createInjector } from '../../injector';
+import { BasePrismaClient } from '../../shared/base-command-repo';
+import { BusinessExceptionType } from '../../shared/exception/business-exception/exception-info';
+import { IHashManager } from '../../shared/interface/i-bcrypt-hash-manager';
 import http from 'http';
-import { BusinessExceptionType } from '../../../shared/exception/business-exception/exception-info';
-import { Role, Status } from '../entity/base-user';
-import { IHashManager } from '../../../shared/interface/i-bcrypt-hash-manager';
-import { CreateResidentReqDto, UpdateResidentReqDto } from '../dto/resident-user-response';
+import { Role, Status } from '../../domain/user/entity/base-user';
 
 describe('user service e2e 테스트', () => {
   let app: Application;
@@ -24,6 +26,7 @@ describe('user service e2e 테스트', () => {
   let server: http.Server;
   let hashManager: IHashManager;
   let cookies: string;
+  let redis: any;
 
   beforeAll(async () => {
     prisma = new PrismaClient();
@@ -31,6 +34,7 @@ describe('user service e2e 테스트', () => {
     app = injector.httpServer.app;
     server = injector.httpServer.defaultHttpServer;
     hashManager = injector.hashManager;
+    redis = injector.redisExternal;
     const now = new Date();
 
     /* ---------- DB 초기화 ---------- */
@@ -148,7 +152,10 @@ describe('user service e2e 테스트', () => {
 
   afterAll(async () => {
     await prisma.apartment.deleteMany();
+    await prisma.user.deleteMany();
     await new Promise((resolve) => server.close(resolve));
+    await prisma.$disconnect();
+    await redis.quit();
   });
 
   // 관리자 계정
