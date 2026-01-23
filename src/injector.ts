@@ -82,7 +82,7 @@ export const createInjector = (mockPrisma?: PrismaClient) => {
   // Service
   const apartmentQueryService = createApartmentQueryService(apartmentQueryRepo, redisLocker);
 
-  const userQueryService = createUserQueryService(userQueryRepository, redisExternal, redisLocker);
+  const userQueryService = createUserQueryService(userQueryRepository, redisLocker);
   const userCommandService = createUserCommandService(
     unitOfwork,
     hashManager,

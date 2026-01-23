@@ -1,3 +1,5 @@
+import { GetResidentAccountsReqDto } from '../domain/user/dto/user-request';
+
 export const redisKeys = {
   administratorsList: (params: {
     page: number;
@@ -19,6 +21,12 @@ export const redisKeys = {
   apartmentById: (params: { apartmentId: string }) => {
     const key = `apartment:by-id:${params.apartmentId}`;
     const lock = `lock:apartment:by-id:${params.apartmentId}`;
+    return { key, lock };
+  },
+
+  residentAccounts: (dto: GetResidentAccountsReqDto) => {
+    const key = `apartments:list:${dto.page}:${dto.limit}`;
+    const lock = `lock:apartments:list:${dto.page}:${dto.limit}`;
     return { key, lock };
   },
 };

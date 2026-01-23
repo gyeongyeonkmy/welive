@@ -82,7 +82,7 @@ export const userIdSchema = z.string({ message: '유저 ID는 문자열이어야
 
 export const pageSchema = z.coerce.number().min(1).default(1);
 
-export const limitSchema = z.coerce.number().min(1).max(20).default(20);
+export const limitSchema = z.coerce.number().min(1).max(20).default(10);
 
 export const residentSearchKeyword = z.string().optional();
 
