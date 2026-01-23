@@ -2,7 +2,6 @@ import { BusinessException } from '../../../shared/exception/business-exception/
 import { BusinessExceptionType } from '../../../shared/exception/business-exception/exception-info';
 import { GetResidentReqDto, GetResidentsReqDto } from '../dto/resident-user-response';
 import { GetResidentAccountsReqDto } from '../dto/user-request';
-import { AdministratorView } from '../dto/view/administrator';
 import { ResidentAccountView, ResidentsView, ResidentView } from '../dto/view/resident';
 import { Status } from '../entity/base-user';
 import { IUserQueryRepo } from '../interface/i-user-query-repo';
@@ -12,7 +11,6 @@ import { IRedisLocker } from '../../../shared/interface/i-redis-locker';
 
 export const createUserQueryService = (
   userQueryRepo: IUserQueryRepo,
-  redisExternal: IRedisExternal,
   redisLocker: IRedisLocker,
 ) => {
   const getAdministrators = async (params: {
@@ -70,9 +68,25 @@ export const createUserQueryService = (
 
   const getResidentAccounts = async (
     dto: GetResidentAccountsReqDto,
-  ): Promise<ResidentAccountView> => {
-    const residentAccountsUser = await userQueryRepo.findResidentAccounts(dto);
+  ): Promise<ResidentAccountView | null> => {
+    const { key, lock } = redisKeys.residentAccounts(dto);
 
+    const residentAccountsUser = await redisLocker.doWork({
+      key,
+      lockKey: lock,
+      cacheTtlSeconds: 30,
+      lockTtlSeconds: 1,
+      work: userQueryRepo.findResidentAccounts(dto),
+    });
+
+    if (residentAccountsUser === null) {
+      BusinessException({
+        type: BusinessExceptionType.TEMPORARY_UNAVAILABLE,
+      });
+    }
+
+    // 캐시 안한 로직
+    // const residentAccountsUser =userQueryRepo.findResidentAccounts(dto)
     return residentAccountsUser;
   };
 

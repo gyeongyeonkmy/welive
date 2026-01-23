@@ -38,6 +38,7 @@ export enum BusinessExceptionType {
   NOT_SUPERADMIN,
   NOT_ADMIN,
   ALREADY_VOTED,
+  TEMPORARY_UNAVAILABLE,
 }
 
 export const BusinessExceptionTable: Record<
@@ -212,5 +213,9 @@ export const BusinessExceptionTable: Record<
   [BusinessExceptionType.FAIL_SAVE_NOTICE]: {
     statusCode: 409,
     message: '공지를 저장하지 못했습니다.',
+  },
+  [BusinessExceptionType.TEMPORARY_UNAVAILABLE]: {
+    statusCode: 503,
+    message: '잠시 후 다시 시도해주세요.',
   },
 };
