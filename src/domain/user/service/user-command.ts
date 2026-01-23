@@ -44,7 +44,7 @@ export const createUserCommandService = (
   uow: IUnitOfWork,
   hashManager: IHashManager,
   userCommandRepo: IUserCommandRepo,
-  apartmentRepo: IApartmentCommandRepo,
+  apartCommandmentRepo: IApartmentCommandRepo,
 ) => {
   // 관리자
   const createSuperAdmin = async (dto: CreateSuperAdminDto): Promise<void> => {
@@ -92,7 +92,7 @@ export const createUserCommandService = (
     try {
       await uow.doWork(
         async () => {
-          const apartment = await apartmentRepo.create(apartmentEntity);
+          const apartment = await apartCommandmentRepo.create(apartmentEntity);
 
           // 2. 관리자 계정 생성
           const userEntity = await AdminAccountEntity.create({
@@ -282,8 +282,9 @@ export const createUserCommandService = (
 
     await userCommandRepo.deleteUsers();
   };
+
   // 입주민 계정
-  const createResidentAccount = async (dto: SignUpResidentAccountReqDto) => {
+  const createResidentAccount = async (dto: SignUpResidentAccountReqDto): Promise<void> => {
     try {
       await uow.doWork(async () => {
         const resident = await userCommandRepo.findNotJoinedResidentByEmail(dto.email);
@@ -296,7 +297,12 @@ export const createUserCommandService = (
             await userCommandRepo.update(
               await ResidentAccountEntity.requestJoin(resident, dto, hashManager),
             );
+            return;
           }
+
+          throw BusinessException({
+            type: BusinessExceptionType.EMAIL_ALREADY_IN_USE,
+          });
         }
       });
     } catch (err) {
@@ -425,9 +431,6 @@ export const createUserCommandService = (
             type: BusinessExceptionType.CONCURRENT_MODIFICATION,
           });
         }
-        if (err.type === TechnicalExceptionType.UNIQUE_VIOLATION_EMAIL) {
-          throw BusinessException({ type: BusinessExceptionType.EMAIL_ALREADY_IN_USE });
-        }
         if (err.type === TechnicalExceptionType.UNIQUE_VIOLATION_CONTACT) {
           throw BusinessException({ type: BusinessExceptionType.CONTACT_ALREADY_IN_USE });
         }
@@ -484,7 +487,7 @@ export const createUserCommandService = (
         }
 
         // 입력한 새 비번과 DB 비번 일치하는지 비교
-        if (await BaseUserEntity.isPasswordMatch(user.password, dto.newpassword, hashManager)) {
+        if (await BaseUserEntity.isPasswordMatch(user.password, dto.newPassword, hashManager)) {
           throw BusinessException({
             type: BusinessExceptionType.CORRECT_PASSWORD,
           });
@@ -492,13 +495,11 @@ export const createUserCommandService = (
 
         if (user.role === Role.ADMIN || user.role === Role.SUPER_ADMIN) {
           await userCommandRepo.updatePassword(
-            await AdminAccountEntity.updatePassword(user, dto.newpassword, hashManager),
+            await AdminAccountEntity.updatePassword(user, dto.newPassword, hashManager),
           );
-        }
-
-        if (user.role === Role.RESIDENT) {
+        } else if (user.role === Role.RESIDENT) {
           await userCommandRepo.updatePassword(
-            await ResidentAccountEntity.updatePassword(user, dto.newpassword, hashManager),
+            await ResidentAccountEntity.updatePassword(user, dto.newPassword, hashManager),
           );
         }
       });

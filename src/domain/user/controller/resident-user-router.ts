@@ -9,20 +9,26 @@ export const registerResidentUserRoutes = (
   handlers: ResidentUserHandlers,
   middlewares: Middlewares,
 ) => {
-  router.post(
-    '/',
-    catchHandler(middlewares.auth.authenticate),
-    catchHandler(handlers.createResident),
-  );
-  router.get('/', catchHandler(middlewares.auth.authenticate), catchHandler(handlers.getResidents));
-  router.get(
+  router.post('/', catchHandler(middlewares.auth.authAdmin), catchHandler(handlers.createResident));
+  router.get('/', catchHandler(middlewares.auth.authAdmin), catchHandler(handlers.getResidents));
+  router.get('/:id', catchHandler(middlewares.auth.authAdmin), catchHandler(handlers.getResident));
+  router.patch(
     '/:id',
-    catchHandler(middlewares.auth.authenticate),
-    catchHandler(handlers.getResident),
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.updateResident),
   );
-  router.patch('/:id', catchHandler(handlers.updateResident));
-  router.delete('/:id', catchHandler(handlers.deleteResident));
-  // router.get('/file/template');
-  // router.post('/file/import');
-  // router.get('/file/export');
+  router.delete(
+    '/:id',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.deleteResident),
+  );
+  // router.get('/file/template',
+  // catchHandler(middlewares.auth.authAdmin),
+  // );
+  // router.post('/file/import'
+  // catchHandler(middlewares.auth.authAdmin),
+  // );
+  // router.get('/file/export'
+  // catchHandler(middlewares.auth.authAdmin),
+  // );
 };

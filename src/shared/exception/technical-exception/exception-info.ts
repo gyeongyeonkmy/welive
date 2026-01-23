@@ -22,7 +22,7 @@ export const TechnicalExceptionTable: Record<TechnicalExceptionType, string> = {
   [TechnicalExceptionType.UNIQUE_VIOLATION_EMAIL]:
     '이메일 유니크 제약 조건 위반 에러가 발생했습니다',
   [TechnicalExceptionType.UNIQUE_VIOLATION_USERNAME]:
-    '닉네임 유니크 제약 조건 위반 에러가 발생했습니다',
+    '아이디 유니크 제약 조건 위반 에러가 발생했습니다',
   [TechnicalExceptionType.UNIQUE_VIOLATION_CONTACT]:
     '연락처 유니크 제약 조건 위반 에러가 발생했습니다',
   [TechnicalExceptionType.UNIQUE_VIOLATION_ADDRESS]:

@@ -22,13 +22,10 @@ export const createResidentController = (
   const createResident = async (req: Request, res: Response) => {
     const userId = '';
 
-    const reqDto = validate(createResidentUserSchema, {
-      ...req.body,
-      //userId: req.userId -> 인증된 유저 페이로드
-    });
+    const reqDto = validate(createResidentUserSchema, req.body);
     await userCommandService.createResident(reqDto);
 
-    return res.json(await userQueryService.getResidentByEmail(reqDto.email, reqDto.userId));
+    return res.json(await userQueryService.getResidentByEmail(reqDto.email));
   };
 
   const getResidents = async (req: Request, res: Response) => {

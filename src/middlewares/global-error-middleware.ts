@@ -8,7 +8,10 @@ export const createGlobalErrorMiddleware = () => {
     const isDev = getEnv().NODE_ENV === 'development';
     if (isBusinessException(err)) {
       if (isDev) console.error(err);
-      return res.status(err.statusCode).json({ message: err.message });
+      return res.status(err.statusCode).json({
+        message: err.message,
+        type: err.type,
+      });
     }
 
     if (isTechnicalException(err)) {

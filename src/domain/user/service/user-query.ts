@@ -40,8 +40,8 @@ export const createUserQueryService = (
     return administrators;
   };
 
-  const getResidentByEmail = async (email: string, userId: string): Promise<ResidentView> => {
-    const notJoidedResidentUser = await userQueryRepo.findNotJoinedResidentByEmail(email, userId);
+  const getResidentByEmail = async (email: string): Promise<ResidentView> => {
+    const notJoidedResidentUser = await userQueryRepo.findNotJoinedResidentByEmail(email);
 
     if (!notJoidedResidentUser) {
       throw BusinessException({
