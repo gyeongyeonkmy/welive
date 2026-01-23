@@ -17,7 +17,6 @@ import {
 } from './common-schema';
 
 export const createResidentUserSchema = z.object({
-  userId: userIdSchema,
   apartmentId: z.string(),
   email: emailSchema,
   contact: contactSchema,
@@ -42,7 +41,6 @@ export const deleteResidentSchema = z.object({
 });
 
 export const getResidentsSchema = z.object({
-  userId: userIdSchema,
   page: pageSchema,
   limit: limitSchema,
   searchKeyword: residentSearchKeyword,
@@ -53,7 +51,6 @@ export const getResidentsSchema = z.object({
 });
 
 export const getResidentSchema = z.object({
-  userId: userIdSchema,
   id: userIdSchema,
 });
 

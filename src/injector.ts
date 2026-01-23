@@ -174,5 +174,6 @@ export const createInjector = (mockPrisma?: PrismaClient) => {
     httpServer,
     redisExternal,
     // wsServer,
+    hashManager,
   };
 };

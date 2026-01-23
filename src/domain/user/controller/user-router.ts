@@ -50,13 +50,26 @@ export const registerUserRoutes = (
 
   // 입주민 계정
   router.post('/residents', catchHandler(handlers.signUpResidentAccount));
-  router.get('/residents', catchHandler(handlers.getResidentAccounts));
-  router.patch('/residents/join-status', catchHandler(handlers.updateResidentAccountJoinStatuses));
+  router.get(
+    '/residents',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.getResidentAccounts),
+  );
+  router.patch(
+    '/residents/join-status',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.updateResidentAccountJoinStatuses),
+  );
   router.patch(
     '/residents/:id/join-status',
+    catchHandler(middlewares.auth.authAdmin),
     catchHandler(handlers.updateResidentAccountJoinStatus),
   );
-  router.delete('/residents/rejected', catchHandler(handlers.deleteResidentAccounts));
+  router.delete(
+    '/residents/rejected',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.deleteResidentAccounts),
+  );
 
   // 공통
   router.patch(

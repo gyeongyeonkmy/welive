@@ -82,11 +82,11 @@ export const BusinessExceptionTable: Record<
 
   [BusinessExceptionType.INCORRECT_PASSWORD]: {
     statusCode: 401,
-    message: '비밀번호가 올바르지 않습니다.',
+    message: '현재 비밀번호가 올바르지 않습니다.',
   },
   [BusinessExceptionType.CORRECT_PASSWORD]: {
-    statusCode: 200,
-    message: '비밀번호가 올바릅니다.',
+    statusCode: 401,
+    message: '새 비밀번호가 이전 비밀번호하고 동일합니다.',
   },
 
   [BusinessExceptionType.DONT_MODIFY_PENDING]: {

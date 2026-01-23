@@ -16,28 +16,20 @@ export const createResidentUserHandlers = (
   userQueryService: UserQueryService,
 ) => {
   const createResident = async (req: Request, res: Response) => {
-    const reqDto = validate(createResidentUserSchema, {
-      ...req.body,
-      userId: req.userId,
-    });
+    const reqDto = validate(createResidentUserSchema, req.body);
     await userCommandService.createResident(reqDto);
 
-    return res.json(await userQueryService.getResidentByEmail(reqDto.email, reqDto.userId));
+    return res.status(201).json(await userQueryService.getResidentByEmail(reqDto.email));
   };
 
   const getResidents = async (req: Request, res: Response) => {
-    const reqDto = validate(getResidentsSchema, {
-      ...req.query,
-      userId: req.userId,
-    });
+    const reqDto = validate(getResidentsSchema, req.query);
 
     return res.json(await userQueryService.getResidents(reqDto));
   };
 
   const getResident = async (req: Request, res: Response) => {
-    const reqDto = validate(getResidentSchema, {
-      ...req.params,
-    });
+    const reqDto = validate(getResidentSchema, req.params);
 
     return res.json(await userQueryService.getResidentById(reqDto));
   };

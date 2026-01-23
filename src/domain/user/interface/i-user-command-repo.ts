@@ -34,7 +34,6 @@ export interface IUserCommandRepo {
 
   /**
    *  @ throws OPTIMISTIC_LOCK_FAILED
-   *  @ throws UNIQUE_VIOLATION_EMAIL
    *  @ throws UNIQUE_VIOLATION_USERNAME
    *  @ throws UNIQUE_VIOLATION_CONTACT
    */

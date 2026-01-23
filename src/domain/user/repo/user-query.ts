@@ -118,10 +118,7 @@ export const createUserQueryRepo = (prisma: PrismaClient): IUserQueryRepo => {
     };
   };
 
-  const findNotJoinedResidentByEmail = async (
-    email: string,
-    userId: string,
-  ): Promise<ResidentView | null> => {
+  const findNotJoinedResidentByEmail = async (email: string): Promise<ResidentView | null> => {
     const notJoinedResident = await prisma.user.findUnique({
       where: { email },
       include: userInclude,
@@ -133,7 +130,7 @@ export const createUserQueryRepo = (prisma: PrismaClient): IUserQueryRepo => {
 
     return {
       id: notJoinedResident.id,
-      userId: userId,
+      userId: notJoinedResident.id,
       email: notJoinedResident.email,
       contact: notJoinedResident.contact,
       name: notJoinedResident.name,

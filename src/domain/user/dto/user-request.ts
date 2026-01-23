@@ -151,7 +151,7 @@ export const updateAvatarUrlSchema = z.object({
 export const updatePasswordSchema = z.object({
   userId: userIdSchema,
   password: passwordSchema,
-  newpassword: passwordSchema,
+  newPassword: passwordSchema,
 });
 
 export type UpdateAvatarUrlReqDto = z.infer<typeof updateAvatarUrlSchema>;
