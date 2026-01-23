@@ -158,7 +158,7 @@ export const createUserCommandService = (
           await userCommandRepo.update(updatedUserEntity);
 
           // // 3. 아파트 정보 조회
-          const foundApartment = await apartmentRepo.findById(
+          const foundApartment = await apartCommandmentRepo.findById(
             foundUser.userApartmentLink![0].apartmentId,
           );
 
