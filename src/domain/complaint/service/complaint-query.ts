@@ -5,9 +5,9 @@ import { isTechnicalException } from '../../../shared/exception/technical-except
 import { TechnicalExceptionType } from '../../../shared/exception/technical-exception/exception-info';
 import { BusinessException } from '../../../shared/exception/business-exception/business-exception';
 import { BusinessExceptionType } from '../../../shared/exception/business-exception/exception-info';
-import { redisKeys } from '../../../utils/redis-keys';
 import { IRedisLocker } from '../../../shared/interface/i-redis-locker';
 import { IRedisExternal } from '../../../shared/interface/i-redis';
+import { redisKeys } from '../../../shared/utils/redis-keys';
 
 export const createComplaintQueryService = (
   redisLocker: IRedisLocker,

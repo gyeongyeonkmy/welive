@@ -1,7 +1,7 @@
-﻿import { redisKeys } from '../../../utils/redis-keys';
-import { viewApartmentDTO, viewApartmentsDTO } from '../dto/apartment-request';
+﻿import { viewApartmentDTO, viewApartmentsDTO } from '../dto/apartment-request';
 import { IApartmentQueryRepo } from '../interface/i-apartment-query';
 import { IRedisLocker } from '../../../shared/interface/i-redis-locker';
+import { redisKeys } from '../../../shared/utils/redis-keys';
 
 export const createApartmentQueryService = (
   apartmentQueryRepo: IApartmentQueryRepo,

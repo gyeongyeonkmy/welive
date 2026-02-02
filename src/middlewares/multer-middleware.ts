@@ -1,35 +1,12 @@
-import multerS3 from 'multer-s3';
 import multer from 'multer';
-import { S3Client } from '@aws-sdk/client-s3';
-import { getEnv } from '../config';
-import path from 'path';
 import { BusinessException } from '../shared/exception/business-exception/business-exception';
 import { BusinessExceptionType } from '../shared/exception/business-exception/exception-info';
-
-type UploadType = 'avatarImage' | 'csv';
+import { FileManager, UploadType } from '../shared/utils/file-manager';
 
 export const createMulterMiddleware = () => {
-  const s3Client = new S3Client({
-    region: getEnv().AWS_REGION,
-    credentials: {
-      accessKeyId: getEnv().AWS_ACCESS_KEY_ID,
-      secretAccessKey: getEnv().AWS_SECRET_ACCESS_KEY,
-    },
-  });
   const createUploader = (type: UploadType) =>
     multer({
-      storage: multerS3({
-        s3: s3Client,
-        bucket: getEnv().AWS_S3_BUCKET_NAME,
-        contentType: multerS3.AUTO_CONTENT_TYPE,
-        acl: 'private',
-        key: (req, file, callback) => {
-          const ext = path.extname(file.originalname);
-          const filename = `${path.basename(file.originalname, ext)}.${Date.now()}${ext}`;
-          const dir = type === 'avatarImage' ? 'profile-image' : 'CSV-from';
-          callback(null, `${dir}/${filename}`);
-        },
-      }),
+      storage: FileManager.getStorage(type),
       limits: {
         fileSize: 10 * 1024 * 1024, // 최대 10메가까지
       },
@@ -57,6 +34,7 @@ export const createMulterMiddleware = () => {
         cb(null, true);
       },
     });
+
   return {
     image: () => createUploader('avatarImage').single('avatarImage'),
     csv: () => createUploader('csv').single('csv'),

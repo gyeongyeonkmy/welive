@@ -3,7 +3,7 @@ import { IUnitOfWork, UnitOfWorkOptions } from '../shared/interface/i-unit-of-wo
 import { TechnicalExceptionType } from '../shared/exception/technical-exception/exception-info';
 import { isTechnicalException } from '../shared/exception/technical-exception/technical-exception';
 import { getEnv } from '../config';
-import { asyncContextStorage } from '../utils/async-context-storage-util';
+import { asyncContextStorage } from '../shared/utils/async-context-storage-util';
 
 export const createUnitOfWork = (prismaClient: PrismaClient): IUnitOfWork => {
   const doWork = async <T>(

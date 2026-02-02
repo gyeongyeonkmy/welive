@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { catchHandler } from '../../../utils/controller-util';
 import { ResidentUserHandlers } from './resident-user-handler';
 import { Middlewares } from '../../../shared/interface/i-middlewares';
+import { catchHandler } from '../../../shared/utils/controller-util';
 
 export const registerResidentUserRoutes = (
   router: Router,

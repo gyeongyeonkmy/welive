@@ -1,5 +1,5 @@
 import { Middlewares } from '../../../shared/interface/i-middlewares';
-import { createBaseController } from '../../../utils/controller-util';
+import { createBaseController } from '../../../shared/utils/controller-util';
 import { CommentCommandService } from '../service/comment-command';
 import { CommentQueryService } from '../service/comment-query';
 import { createCommentHandlers } from './comment-handler';

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { catchHandler } from '../../../utils/controller-util';
 import { ApartmentHandlers } from './apartment-handler';
+import { catchHandler } from '../../../shared/utils/controller-util';
 
 export const registerApartmentRoutes = (router: Router, handlers: ApartmentHandlers) => {
   router.get('/', catchHandler(handlers.getApartments));

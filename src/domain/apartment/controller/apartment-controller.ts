@@ -1,4 +1,4 @@
-import { createBaseController } from '../../../utils/controller-util';
+import { createBaseController } from '../../../shared/utils/controller-util';
 import { ApartmentQueryService } from '../service/apartment-query';
 import { createApartmentHandlers } from './apartment-handler';
 import { registerApartmentRoutes } from './apartment-router';

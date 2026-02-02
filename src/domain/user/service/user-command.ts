@@ -37,11 +37,10 @@ import { StateEntity, WorkType } from '../../state/entity/state';
 import { IRedisExternal } from '../../../shared/interface/i-redis';
 import { ResidentAddressVO } from '../entity/vo/resident-address';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { s3 } from '../../../utils/s3-client';
 import { clean, importResidentRowSchema } from '../dto/import-resident-row-dto';
-import { streamToString } from '../../../utils/stream-to-string';
 import { UserMapper } from '../user-mapper';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { s3 } from '../../../shared/utils/s3-client';
+import { streamToString } from '../../../shared/utils/stream-to-string';
 
 export const createUserCommandService = (
   uow: IUnitOfWork,
@@ -437,6 +436,7 @@ export const createUserCommandService = (
   };
 
   const createResidentBulk = async (s3Dto: { userId: string; bucket: string; key: string }) => {
+    console.log(s3Dto);
     const apartmentId = (await userCommandRepo.findAdminById(s3Dto.userId))!.userApartmentLink![0]
       .apartmentId;
 
@@ -475,6 +475,7 @@ export const createUserCommandService = (
     let isFirstLine = true;
 
     for await (const line of lines) {
+      console.log(line);
       if (isFirstLine) {
         isFirstLine = false;
         continue;
@@ -536,6 +537,7 @@ export const createUserCommandService = (
     }
 
     const residentCount = await userCommandRepo.createManyBulk(batchEntities);
+    console.log(residentCount);
     console.log(`${processCount + residentCount} 벌크 크리에이트 완료`);
     batchEntities = [];
 

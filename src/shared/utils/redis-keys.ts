@@ -1,4 +1,4 @@
-import { ComplaintStatus } from '../domain/complaint/complaint-entity';
+import { ComplaintStatus } from '../../domain/complaint/complaint-entity';
 
 export const redisKeys = {
   authToken: (accessToken: string) => {

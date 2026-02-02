@@ -1,9 +1,9 @@
 import { NoticeCommandService } from '../service/notice-command';
 import { NoticeQueryService } from '../service/notice-query';
-import { createBaseController } from '../../../utils/controller-util';
 import { Middlewares } from '../../../shared/interface/i-middlewares';
 import { createNoticeHandler } from './notice-handler';
 import { registerNoticeRoutes } from './notice-router';
+import { createBaseController } from '../../../shared/utils/controller-util';
 
 export const createNoticeController = (
   middlewares: Middlewares,

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler, Router } from 'express';
 import { z } from 'zod';
-import { BusinessException } from '../shared/exception/business-exception/business-exception';
-import { BusinessExceptionType } from '../shared/exception/business-exception/exception-info';
 import multer from 'multer';
+import { BusinessException } from '../exception/business-exception/business-exception';
+import { BusinessExceptionType } from '../exception/business-exception/exception-info';
 
 export const createBaseController = (path: string) => {
   const basePath = path;

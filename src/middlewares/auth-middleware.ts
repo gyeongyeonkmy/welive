@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { BusinessException } from '../shared/exception/business-exception/business-exception';
 import { BusinessExceptionType } from '../shared/exception/business-exception/exception-info';
 import { Role } from '../domain/user/entity/base-user';
-import { redisKeys } from '../utils/redis-keys';
 import { IRedisExternal } from '../shared/interface/i-redis';
 import { ITokenUtil } from '../shared/interface/i-token-manager';
+import { redisKeys } from '../shared/utils/redis-keys';
 
 export const createAuthMiddleware = (tokenUtil: ITokenUtil, redisExternal: IRedisExternal) => {
   const authenticate = async (req: Request, res: Response, next: NextFunction) => {

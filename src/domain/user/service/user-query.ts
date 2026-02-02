@@ -14,12 +14,12 @@ import {
 } from '../dto/view/resident';
 import { Status } from '../entity/base-user';
 import { IUserQueryRepo } from '../interface/i-user-query-repo';
-import { redisKeys } from '../../../utils/redis-keys';
 import { IRedisLocker } from '../../../shared/interface/i-redis-locker';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { s3 } from '../../../utils/s3-client';
 import { Readable } from 'stream';
 import { getEnv } from '../../../config';
+import { redisKeys } from '../../../shared/utils/redis-keys';
+import { s3 } from '../../../shared/utils/s3-client';
 
 /**
  *  전제 - 한 아파트에 관리자가 1명인 프로젝트

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { ComplaintHanders } from './complaint-handler';
-import { catchHandler } from '../../../utils/controller-util';
 import { Middlewares } from '../../../shared/interface/i-middlewares';
+import { catchHandler } from '../../../shared/utils/controller-util';
 
 export const registerComplaintRouters = (
   router: Router,

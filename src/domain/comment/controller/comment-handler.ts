@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { validate } from '../../../utils/controller-util';
 import {
   createCommentReqBodySchema,
   deleteCommentReqParamsSchema,
@@ -8,6 +7,7 @@ import {
 } from '../dto/comment-request';
 import { CommentCommandService } from '../service/comment-command';
 import { CommentQueryService } from '../service/comment-query';
+import { validate } from '../../../shared/utils/controller-util';
 
 export const createCommentHandlers = (
   commentCommandService: CommentCommandService,
