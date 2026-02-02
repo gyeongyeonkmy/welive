@@ -1,4 +1,4 @@
-import { validate } from '../../../utils/controller-util';
+import { validate } from '../../../shared/utils/controller-util';
 import {
   createSuperAdminSchema,
   createAdminSchema,

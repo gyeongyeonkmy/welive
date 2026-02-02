@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { asyncContextStorage } from '../utils/async-context-storage-util';
+import { asyncContextStorage } from './utils/async-context-storage-util';
 
 export type TxPrismaClient = Prisma.TransactionClient;
 export type BasePrismaClient = PrismaClient | TxPrismaClient;

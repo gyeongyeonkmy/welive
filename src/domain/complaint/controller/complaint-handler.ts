@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { validate } from '../../../utils/controller-util';
 import {
   createComplaintReqBodySchema,
   deleteComplaintReqParamsSchema,
@@ -11,6 +10,7 @@ import {
 import { ComplaintCommandService } from '../service/complaint-command';
 import { ComplaintQueryService } from '../service/complaint-query';
 import { ComplaintMapper } from '../dto/complaint-response';
+import { validate } from '../../../shared/utils/controller-util';
 
 export const createComplaintHandlers = (
   complaintQueryService: ComplaintQueryService,

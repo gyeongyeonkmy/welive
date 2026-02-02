@@ -1,4 +1,4 @@
-import { createBaseController } from '../../../utils/controller-util';
+import { createBaseController } from '../../../shared/utils/controller-util';
 import { AuthService } from '../auth-service';
 import { createAuthHandlers } from './auth-handler';
 import { registerAuthRoutes } from './auth-router';

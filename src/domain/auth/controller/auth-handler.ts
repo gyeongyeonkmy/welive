@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { validate } from '../../../shared/utils/controller-util';
 import { AuthService } from '../auth-service';
-import { validate } from '../../../utils/controller-util';
 import { loginSchema, cookieTokenSchema } from '../dto/auth-request';
 import { Request, Response } from 'express';
 

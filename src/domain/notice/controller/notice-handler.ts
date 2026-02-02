@@ -1,5 +1,5 @@
 import { Middlewares } from '../../../shared/interface/i-middlewares';
-import { validate } from '../../../utils/controller-util';
+import { validate } from '../../../shared/utils/controller-util';
 import { getEventsReqParamsSchema } from '../dto/event-request';
 import {
   getNoticeReqParamsSchema,

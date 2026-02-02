@@ -1,5 +1,5 @@
 import { Middlewares } from '../../../shared/interface/i-middlewares';
-import { createBaseController } from '../../../utils/controller-util';
+import { createBaseController } from '../../../shared/utils/controller-util';
 import { ComplaintCommandService } from '../service/complaint-command';
 import { ComplaintQueryService } from '../service/complaint-query';
 import { createComplaintHandlers } from './complaint-handler';

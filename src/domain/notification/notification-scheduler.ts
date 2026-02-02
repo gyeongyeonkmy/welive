@@ -1,5 +1,5 @@
 import { getEnv } from '../../config';
-import { createSingleTaskScheduler } from '../../utils/scheduler-util';
+import { createSingleTaskScheduler } from '../../shared/utils/scheduler-util';
 import { StateCommandService } from '../state/service/state-command';
 import { NotificationCommandService } from './service/notification-command';
 

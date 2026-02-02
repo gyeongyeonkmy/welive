@@ -1,4 +1,4 @@
-import { createSingleTaskScheduler } from '../../utils/scheduler-util';
+import { createSingleTaskScheduler } from '../../shared/utils/scheduler-util';
 import { ComplaintBatchService } from './service/complaint-batch';
 
 export const createComplaintScheduler = (service: ComplaintBatchService) => {

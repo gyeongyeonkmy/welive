@@ -1,5 +1,5 @@
 import { Middlewares } from '../../../shared/interface/i-middlewares';
-import { createBaseController } from '../../../utils/controller-util';
+import { createBaseController } from '../../../shared/utils/controller-util';
 import { UserCommandService } from '../service/user-command';
 import { UserQueryService } from '../service/user-query';
 import { createResidentUserHandlers } from './resident-user-handler';

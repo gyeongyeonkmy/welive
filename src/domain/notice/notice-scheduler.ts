@@ -1,4 +1,4 @@
-import { createSingleTaskScheduler } from '../../utils/scheduler-util';
+import { createSingleTaskScheduler } from '../../shared/utils/scheduler-util';
 import { NoticeBatchService } from './service/notice-batch';
 
 export const createNoticeScheduler = (service: NoticeBatchService) => {

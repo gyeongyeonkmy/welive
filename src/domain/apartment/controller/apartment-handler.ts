@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { validate } from '../../../utils/controller-util';
 import { getApartmentsSchema, getApartmentSchema } from '../dto/apartment-request';
 import { ApartmentQueryService } from '../service/apartment-query';
+import { validate } from '../../../shared/utils/controller-util';
 
 export const createApartmentHandlers = (apartmentQueryService: ApartmentQueryService) => {
   const getApartments = async (req: Request, res: Response) => {

@@ -1,5 +1,5 @@
 import { Middlewares } from '../../../shared/interface/i-middlewares';
-import { createBaseController } from '../../../utils/controller-util';
+import { createBaseController } from '../../../shared/utils/controller-util';
 import { NotificationCommandService } from '../service/notification-command';
 import { NotificationQueryService } from '../service/notification-query';
 import { createNotificationHandler } from './notification-handler';
