@@ -44,6 +44,27 @@ jobs:
 
       - name: run unit test
         run: npm run test:unit
+        env:
+          NODE_ENV: test
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PORT: ${{ secrets.PORT }}
+          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+          TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+          ACCESS_TOKEN_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
+          REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
+          CLIENT_DOMAIN: ${{ secrets.CLIENT_DOMAIN }}
+          JSON_LIMIT: ${{ secrets.JSON_LIMIT }}
+          MAX_RETRIES: ${{ secrets.MAX_RETRIES }}
+          OPTIMISTIC_LOCK_RETRY_DELAY_MS: ${{ secrets.OPTIMISTIC_LOCK_RETRY_DELAY_MS }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          ENABLE_RESOURCE_MONITORING: ${{ secrets.ENABLE_RESOURCE_MONITORING }}
+          BULK_NOTIFICATION_SIZE: ${{ secrets.BULK_NOTIFICATION_SIZE }}
+          NOTIFICATION_SCHEDULER_INTERVAL_MS: ${{ secrets.NOTIFICATION_SCHEDULER_INTERVAL_MS }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
   cd:
     needs: ci
     if: github.event_name == 'push' || github.event_name == 'pull_request'
