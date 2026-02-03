@@ -13,10 +13,7 @@ declare global {
 
     namespace Multer {
       interface File {
-        bucket: string;
         key: string;
-        location: string;
-        etag: string;
       }
     }
   }

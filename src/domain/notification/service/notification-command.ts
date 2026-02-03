@@ -82,17 +82,17 @@ export const createNotificationCommandService = (
 
     if (superAdminPayloads.length !== 0) {
       console.log('슈퍼 관리자에게 알림 전송:', superAdminPayloads.length);
-      ClientManager.send(superAdmins, superAdminPayloads);
+      ClientManager.broadCast(superAdmins, superAdminPayloads);
     }
 
     if (adminPayloads.length !== 0) {
       console.log('관리자에게 알림 전송:', adminPayloads.length);
-      ClientManager.send(admins, adminPayloads);
+      ClientManager.broadCast(admins, adminPayloads);
     }
 
     if (userPayloads.length !== 0) {
       console.log('입주민에게 알림 전송:', userPayloads.length);
-      ClientManager.send(residents, userPayloads);
+      ClientManager.broadCast(residents, userPayloads);
     }
   };
 

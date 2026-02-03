@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CreateAdminDto,
   CreateSuperAdminDto,
@@ -36,11 +37,10 @@ import { IStateCommandRepo } from '../../state/interface/i-state-command-repo';
 import { StateEntity, WorkType } from '../../state/entity/state';
 import { IRedisExternal } from '../../../shared/interface/i-redis';
 import { ResidentAddressVO } from '../entity/vo/resident-address';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { clean, importResidentRowSchema } from '../dto/import-resident-row-dto';
 import { UserMapper } from '../user-mapper';
-import { s3 } from '../../../shared/utils/s3-client';
-import { streamToString } from '../../../shared/utils/stream-to-string';
+import { FileManager } from '../../../shared/utils/file-manager';
+import { validate } from '../../../shared/utils/controller-util';
 
 export const createUserCommandService = (
   uow: IUnitOfWork,
@@ -435,47 +435,45 @@ export const createUserCommandService = (
     redisExternal.del('residents:1:10');
   };
 
-  const createResidentBulk = async (s3Dto: { userId: string; bucket: string; key: string }) => {
-    console.log(s3Dto);
-    const apartmentId = (await userCommandRepo.findAdminById(s3Dto.userId))!.userApartmentLink![0]
+  const createResidentBulk = async (s3Dto: { userId: string; key: string }) => {
+    const { userId, key } = s3Dto;
+
+    const apartmentId = (await userCommandRepo.findAdminById(userId))!.userApartmentLink![0]
       .apartmentId;
 
     if (!apartmentId) {
       throw BusinessException({ type: BusinessExceptionType.USER_NOT_FOUND });
     }
 
-    const command = new GetObjectCommand({
-      Bucket: s3Dto.bucket,
-      Key: s3Dto.key,
-    });
+    // 1. 파일 가져오기
+    const data = await FileManager.getFile(key);
 
-    const { Body } = await s3.send(command);
-
-    if (!Body || typeof Body === 'string') {
+    // 2. 파일 타입 검증
+    if (!data.body || typeof data.body === 'string') {
       throw BusinessException({ type: BusinessExceptionType.NOT_CSV_FILE });
     }
 
-    const csvText = await streamToString(Body);
+    // 3. 파일 내용 가져오기
+    const contents = await FileManager.readFile(data.body as any);
 
-    const lines = csvText.split(/\r?\n/);
-
-    let batchEntities = [];
-    let processCount = 0;
-
+    // 4. 아파트 정보 가져오기
     const apartmentInfo = await apartmentCommandRepo.findById(apartmentId);
-
     if (!apartmentInfo) {
       throw BusinessException({
         type: BusinessExceptionType.APARTMENT_NOT_FOUND,
       });
     }
+
     const { buildingNumberTo, buildingNumberFrom, floorCountPerBuilding, unitCountPerFloor } =
       apartmentInfo;
 
     let isFirstLine = true;
 
-    for await (const line of lines) {
-      console.log(line);
+    // 파일 파싱 및 데이터 검증 후 벌크 생성
+    let batchEntities = [];
+    let processCount = 0;
+
+    for (const line of contents) {
       if (isFirstLine) {
         isFirstLine = false;
         continue;
@@ -493,12 +491,8 @@ export const createUserCommandService = (
         isHouseholder: clean(isHouseholderRaw),
       };
       // 데이터 형식 검증
-      const parsed = importResidentRowSchema.safeParse(rawRow);
-      if (!parsed.success) {
-        continue;
-      }
-
-      const { building, unit, name, contact, email, isHouseholder } = parsed.data;
+      const data = validate(importResidentRowSchema, rawRow);
+      const { building, unit, name, contact, email, isHouseholder } = data;
 
       // 비즈니즈 검증
       const buildingNumber = Number(building);
@@ -515,19 +509,20 @@ export const createUserCommandService = (
       if (unitInFloor < 1 || unitInFloor > unitCountPerFloor) {
         continue;
       }
-      batchEntities.push(
-        NotJoinedResidentEntity.create({
-          name,
-          email,
-          contact,
-          address: ResidentAddressVO.create({
-            isHouseholder: isHouseholder,
-            building: Number(building),
-            unit: Number(unit),
-          }),
-          userApartmentLink: [UserApartmentLinkVO.create(apartmentId)],
+      const entity = NotJoinedResidentEntity.create({
+        name,
+        email,
+        contact,
+        address: ResidentAddressVO.create({
+          isHouseholder: isHouseholder,
+          building: Number(building),
+          unit: Number(unit),
         }),
-      );
+        userApartmentLink: [UserApartmentLinkVO.create(apartmentId)],
+      });
+
+      batchEntities.push(entity);
+
       if (batchEntities.length === 1000) {
         await userCommandRepo.createManyBulk(batchEntities);
         processCount += 1000;

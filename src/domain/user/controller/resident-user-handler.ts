@@ -55,10 +55,13 @@ export const createResidentUserHandlers = (
   };
 
   const importResidentsFromCsv = async (req: Request, res: Response) => {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
     const registeredResidentCount = await userCommandService.createResidentBulk({
       userId: req.userId!,
-      bucket: req.file!.bucket,
-      key: req.file!.key,
+      key: req.file.path,
     });
 
     return res.json(registeredResidentCount);
