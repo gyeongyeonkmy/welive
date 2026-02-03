@@ -2,6 +2,7 @@ import multer from 'multer';
 import { BusinessException } from '../shared/exception/business-exception/business-exception';
 import { BusinessExceptionType } from '../shared/exception/business-exception/exception-info';
 import { FileManager, UploadType } from '../shared/utils/file-manager';
+import { NextFunction, Request, Response } from 'express';
 
 export const createMulterMiddleware = () => {
   const createUploader = (type: UploadType) =>
@@ -35,9 +36,17 @@ export const createMulterMiddleware = () => {
       },
     });
 
+  const mapS3Path = (req: Request, res: Response, next: NextFunction) => {
+    if (req.file && req.file.key) {
+      req.file.path = req.file.key; // or req.file.location if you want the URL
+    }
+    next();
+  };
+
   return {
-    image: () => createUploader('avatarImage').single('avatarImage'),
-    csv: () => createUploader('csv').single('csv'),
+    image: createUploader('image').single('image'),
+    csv: createUploader('csv').single('csv'),
+    mapS3Path,
   };
 };
 

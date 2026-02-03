@@ -15,11 +15,9 @@ import {
 import { Status } from '../entity/base-user';
 import { IUserQueryRepo } from '../interface/i-user-query-repo';
 import { IRedisLocker } from '../../../shared/interface/i-redis-locker';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
-import { getEnv } from '../../../config';
 import { redisKeys } from '../../../shared/utils/redis-keys';
-import { s3 } from '../../../shared/utils/s3-client';
+import { FileManager } from '../../../shared/utils/file-manager';
 
 /**
  *  전제 - 한 아파트에 관리자가 1명인 프로젝트
@@ -160,21 +158,17 @@ export const createUserQueryService = (
   };
 
   const exportResidentTemplate = async () => {
-    const command = new GetObjectCommand({
-      Bucket: getEnv().AWS_S3_BUCKET_NAME,
-      Key: 'CSV-form/resident_upload_form.csv',
-    });
+    const filePath = 'CSV-form/resident_upload_form.csv';
+    const data = await FileManager.getFile(filePath);
 
-    const response = await s3.send(command);
-
-    if (!response.Body || typeof response.Body === 'string') {
+    if (!data.body || typeof data.body === 'string') {
       throw BusinessException({ type: BusinessExceptionType.NOT_CSV_FILE });
     }
 
     return {
-      stream: response.Body as NodeJS.ReadableStream,
-      contentType: response.ContentType ?? 'text/csv',
-      contentLength: response.ContentLength,
+      stream: data.body as NodeJS.ReadableStream,
+      contentType: data.contentType ?? 'text/csv',
+      contentLength: data.contentLength,
       fileName: 'resident_bulk_template.csv',
     };
   };

@@ -3,7 +3,7 @@ import { BusinessException } from '../shared/exception/business-exception/busine
 import { BusinessExceptionType } from '../shared/exception/business-exception/exception-info';
 import { Role } from '../domain/user/entity/base-user';
 import { IRedisExternal } from '../shared/interface/i-redis';
-import { ITokenUtil } from '../shared/interface/i-token-manager';
+import { ITokenUtil, SecretTokenPayload } from '../shared/interface/i-token-manager';
 import { redisKeys } from '../shared/utils/redis-keys';
 
 export const createAuthMiddleware = (tokenUtil: ITokenUtil, redisExternal: IRedisExternal) => {
@@ -64,31 +64,22 @@ export const createAuthMiddleware = (tokenUtil: ITokenUtil, redisExternal: IRedi
 
       const key = redisKeys.authToken(access_token);
       const cached = await redisExternal.get(key);
+      let payload: SecretTokenPayload;
+
       if (cached) {
-        const payload = JSON.parse(cached);
-
-        if (payload.role !== Role.SUPER_ADMIN) {
-          return next(BusinessException({ type: BusinessExceptionType.NOT_SUPERADMIN }));
-        }
-        req.user = {
-          userId: payload.userId,
-          role: payload.role,
-          name: payload.name,
-        };
-        req.userId = payload.userId;
-        return next();
+        payload = JSON.parse(cached);
+      } else {
+        payload = tokenUtil.verifyToken({ token: access_token });
+        await redisExternal.set(
+          key,
+          JSON.stringify({
+            userId: payload.userId,
+            role: payload.role,
+            name: payload.name,
+          }),
+          3,
+        );
       }
-      const payload = tokenUtil.verifyToken({ token: access_token });
-
-      await redisExternal.set(
-        key,
-        JSON.stringify({
-          userId: payload.userId,
-          role: payload.role,
-          name: payload.name,
-        }),
-        300,
-      );
 
       if (payload.role !== Role.SUPER_ADMIN) {
         return next(BusinessException({ type: BusinessExceptionType.NOT_SUPERADMIN }));
@@ -100,6 +91,7 @@ export const createAuthMiddleware = (tokenUtil: ITokenUtil, redisExternal: IRedi
         name: payload.name,
       };
       req.userId = payload.userId;
+
       return next();
     } catch (err) {
       return next(BusinessException({ type: BusinessExceptionType.TOKEN_EXPIRED }));

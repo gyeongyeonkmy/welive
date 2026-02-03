@@ -80,7 +80,8 @@ export const registerUserRoutes = (
   router.patch(
     '/me/avatar',
     catchHandler(middlewares.auth.authenticate),
-    catchHandler(middlewares.multer.image()),
+    catchHandler(middlewares.fileUploader.image),
+    catchHandler(middlewares.fileUploader.mapS3Path),
     catchHandler(handlers.updateAvatarUrl),
   );
 

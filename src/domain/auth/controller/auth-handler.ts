@@ -47,8 +47,8 @@ export const createAuthHandlers = (authService: AuthService) => {
   };
 
   const refreshToken = async (req: Request, res: Response) => {
-    const dto = validate(cookieTokenSchema, req.headers);
-
+    const cookie = req.headers.cookie;
+    const dto = validate(cookieTokenSchema, { cookie });
     const { accessToken, refreshToken } = await authService.refreshToken(dto);
 
     res.cookie('access_token', accessToken, {

@@ -21,7 +21,10 @@ export const ClientManager = {
     clients.get(params.role)!.set(params.userId + randomUUID(), params.connection);
   },
 
-  send: (connections: Map<string, Response> | undefined, payloads: LiveNotificationPayload[]) => {
+  broadCast: (
+    connections: Map<string, Response> | undefined,
+    payloads: LiveNotificationPayload[],
+  ) => {
     if (!connections) return;
     connections.forEach((connection) => {
       connection.write(`event: ${WorkType.ALARM}\ndata: ${JSON.stringify(payloads)}\n\n`);
