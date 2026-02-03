@@ -12,7 +12,7 @@ export const createMulterMiddleware = () => {
         fileSize: 10 * 1024 * 1024, // 최대 10메가까지
       },
       fileFilter: (req, file, cb) => {
-        if (type === 'avatarImage') {
+        if (type === 'image') {
           if (!file.mimetype.startsWith('image/')) {
             return cb(
               BusinessException({
