@@ -7,6 +7,7 @@ import {
   UpdateAdminDto,
   UpdateAdminjoinedStatusDto,
   UpdateAdminjoinedStatusesDto,
+  UpdateAvatarUrlReqDto,
   UpdatePasswordReqDto,
   UpdateResidentAccountJoinedStatusesReqDto,
   UpdateResidentAccountJoinedStatusReqDto,
@@ -542,14 +543,10 @@ export const createUserCommandService = (
   };
 
   // 기타
-  const updateAvatarUrl = async (s3Dto: {
-    userId: string;
-    bucket: string;
-    key: string;
-  }): Promise<void> => {
+  const updateAvatarUrl = async (dto: UpdateAvatarUrlReqDto): Promise<void> => {
     try {
       await uow.doWork(async () => {
-        const user = await userCommandRepo.findBaseUserById(s3Dto.userId);
+        const user = await userCommandRepo.findBaseUserById(dto.userId);
 
         if (!user) {
           throw BusinessException({
@@ -557,15 +554,7 @@ export const createUserCommandService = (
           });
         }
 
-        const signedUrl = await getSignedUrl(
-          s3,
-          new GetObjectCommand({
-            Bucket: s3Dto.bucket,
-            Key: s3Dto.key,
-          }),
-        );
-
-        await userCommandRepo.updateAvatar(BaseUserEntity.updateAvatar(user, signedUrl));
+        await userCommandRepo.updateAvatar(BaseUserEntity.updateAvatar(user, dto.avatarUrl));
       });
     } catch (err) {
       if (isTechnicalException(err) && err.type === TechnicalExceptionType.OPTIMISTIC_LOCK_FAILED) {

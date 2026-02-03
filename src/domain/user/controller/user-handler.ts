@@ -12,6 +12,7 @@ import {
   getResidentAccountsSchema,
   updateResidentAccountJoinedStatusesSchema,
   updateResidentAccountJoinedStatusSchema,
+  updateAvatarUrlSchema,
 } from '../dto/user-request';
 import { UserCommandService } from '../service/user-command';
 import { UserQueryService } from '../service/user-query';
@@ -89,11 +90,11 @@ export const createUserHandlers = (
 
   // 공통 controllers
   const updateAvatarUrl = async (req: Request, res: Response) => {
-    await userCommandService.updateAvatarUrl({
-      userId: req.userId!,
-      bucket: req.file!.bucket,
-      key: req.file!.key,
+    const dto = validate(updateAvatarUrlSchema, {
+      userId: req.userId,
+      avatarUrl: (req.file as Express.MulterS3.File).location,
     });
+    await userCommandService.updateAvatarUrl(dto);
     return res.sendStatus(204);
   };
 
