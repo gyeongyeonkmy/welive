@@ -40,6 +40,7 @@ import {
 import { IStateCommandRepo } from '../../domain/state/interface/i-state-command-repo';
 import { IRedisExternal } from '../../shared/interface/i-redis';
 import { UserMapper } from '../../domain/user/user-mapper';
+import { IFileManager } from '../../shared/interface/i-file-manager';
 
 describe('user service 유닛 테스트', () => {
   let mockUow: IUnitOfWork;
@@ -49,6 +50,7 @@ describe('user service 유닛 테스트', () => {
   let mockStateCommandRepo: IStateCommandRepo;
   let userCommandService: UserCommandService;
   let mockRedisExternal: IRedisExternal;
+  let mockFileManager: IFileManager;
 
   beforeAll(() => {});
 
@@ -76,6 +78,12 @@ describe('user service 유닛 테스트', () => {
       increase: jest.fn(),
       decrease: jest.fn(),
       quit: jest.fn(),
+    };
+
+    mockFileManager = {
+      getStorage: jest.fn(),
+      getFile: jest.fn(),
+      readFile: jest.fn(),
     };
 
     mockUserCommandRepo = {
@@ -127,6 +135,7 @@ describe('user service 유닛 테스트', () => {
       mockApartmentRepo,
       mockStateCommandRepo,
       mockRedisExternal,
+      mockFileManager,
     );
   });
 

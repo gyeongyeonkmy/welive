@@ -17,7 +17,7 @@ import { IUserQueryRepo } from '../interface/i-user-query-repo';
 import { IRedisLocker } from '../../../shared/interface/i-redis-locker';
 import { Readable } from 'stream';
 import { redisKeys } from '../../../shared/utils/redis-keys';
-import { FileManager } from '../../../shared/utils/file-manager';
+import { IFileManager } from '../../../shared/interface/i-file-manager';
 
 /**
  *  전제 - 한 아파트에 관리자가 1명인 프로젝트
@@ -27,6 +27,7 @@ import { FileManager } from '../../../shared/utils/file-manager';
 export const createUserQueryService = (
   userQueryRepo: IUserQueryRepo,
   redisLocker: IRedisLocker,
+  fileManager: IFileManager,
 ) => {
   const getAdministrators = async (params: {
     page: number;
@@ -159,7 +160,7 @@ export const createUserQueryService = (
 
   const exportResidentTemplate = async () => {
     const filePath = 'CSV-form/resident_upload_form.csv';
-    const data = await FileManager.getFile(filePath);
+    const data = await fileManager.getFile(filePath);
 
     if (!data.body || typeof data.body === 'string') {
       throw BusinessException({ type: BusinessExceptionType.NOT_CSV_FILE });
