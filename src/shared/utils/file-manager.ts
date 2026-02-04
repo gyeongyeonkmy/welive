@@ -9,12 +9,17 @@ import fs from 'fs';
 import csv from 'csv-parser';
 
 export type UploadType = 'image' | 'csv';
+export type ContentType = {
+  body: string;
+  contentType: string;
+  contentLength: number;
+};
 
 let storage = null;
 let s3Client: S3Client;
 
-export const FileManager = {
-  getStorage: (type: UploadType) => {
+export const FileManager = () => {
+  const getStorage = (type: UploadType) => {
     if (getEnv().NODE_ENV !== 'development') {
       const { localStorage } = FileStorage.createLocalStorage();
       storage = localStorage;
@@ -24,9 +29,9 @@ export const FileManager = {
       s3Client = s3client;
     }
     return storage;
-  },
+  };
 
-  getFile: async (filePath: string) => {
+  const getFile = async (filePath: string) => {
     const results: any[] = [];
 
     if (getEnv().NODE_ENV !== 'development') {
@@ -40,8 +45,10 @@ export const FileManager = {
         });
       console.log(results);
       return {
-        body: results,
-      };
+        body: results.toString(),
+        contentType: 'text/csv',
+        contentLength: results.length,
+      } as ContentType;
     } else {
       const command = new GetObjectCommand({
         Bucket: getEnv().AWS_S3_BUCKET_NAME,
@@ -50,14 +57,14 @@ export const FileManager = {
 
       const response = await s3Client.send(command);
       return {
-        body: response.Body,
+        body: response.Body?.transformToString() ?? '',
         contentType: response.ContentType,
         contentLength: response.ContentLength,
-      };
+      } as ContentType;
     }
-  },
+  };
 
-  readFile: async (body: StreamingBlobPayloadOutputTypes): Promise<string[]> => {
+  const readFile = async (body: StreamingBlobPayloadOutputTypes): Promise<string[]> => {
     const encoding: BufferEncoding = 'utf8';
     let content = '';
     if (body instanceof Readable) {
@@ -82,5 +89,6 @@ export const FileManager = {
     const contents = content.split(/\r?\n/);
     return contents;
     // throw new Error('Unsupported S3 Body type');
-  },
+  };
+  return { getStorage, getFile, readFile };
 };

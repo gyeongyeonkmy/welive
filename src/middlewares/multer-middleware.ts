@@ -1,13 +1,14 @@
 import multer from 'multer';
 import { BusinessException } from '../shared/exception/business-exception/business-exception';
 import { BusinessExceptionType } from '../shared/exception/business-exception/exception-info';
-import { FileManager, UploadType } from '../shared/utils/file-manager';
+import { UploadType } from '../shared/utils/file-manager';
 import { NextFunction, Request, Response } from 'express';
+import { IFileManager } from '../shared/interface/i-file-manager';
 
-export const createMulterMiddleware = () => {
+export const createMulterMiddleware = (fileManager: IFileManager) => {
   const createUploader = (type: UploadType) =>
     multer({
-      storage: FileManager.getStorage(type),
+      storage: fileManager.getStorage(type),
       limits: {
         fileSize: 10 * 1024 * 1024, // 최대 10메가까지
       },

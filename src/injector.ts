@@ -54,6 +54,7 @@ import { createNotificationScheduler } from './domain/notification/notification-
 import { createStateCommandService } from './domain/state/service/state-command';
 import { createMulterMiddleware } from './middlewares/multer-middleware';
 import { TokenUtil } from './shared/utils/token-manager';
+import { FileManager } from './shared/utils/file-manager';
 
 export const createInjector = (mockPrisma?: PrismaClient) => {
   const prisma = mockPrisma ?? new PrismaClient();
@@ -62,13 +63,14 @@ export const createInjector = (mockPrisma?: PrismaClient) => {
   const tokenManager = TokenUtil();
   const redisExternal = createRedisExternal();
   const redisLocker = createRedisLocker(redisExternal);
+  const fileManager = FileManager();
 
   // Middleware
   const middlewares = {
     globalError: createGlobalErrorMiddleware(),
     notFound: createNotFoundMiddleware(),
     auth: createAuthMiddleware(tokenManager, redisExternal),
-    fileUploader: createMulterMiddleware(),
+    fileUploader: createMulterMiddleware(fileManager),
   };
 
   const hashManager = createBcryptHashManager();
@@ -100,7 +102,7 @@ export const createInjector = (mockPrisma?: PrismaClient) => {
   // Service
   const apartmentQueryService = createApartmentQueryService(apartmentQueryRepo, redisLocker);
 
-  const userQueryService = createUserQueryService(userQueryRepository, redisLocker);
+  const userQueryService = createUserQueryService(userQueryRepository, redisLocker, fileManager);
   const userCommandService = createUserCommandService(
     unitOfwork,
     hashManager,
@@ -108,6 +110,7 @@ export const createInjector = (mockPrisma?: PrismaClient) => {
     apartmentCommandRepo,
     stateCommandRepo,
     redisExternal,
+    fileManager,
   );
 
   const pollQuerService = createPollQueryService(pollQueryRepository, redisExternal, redisLocker);

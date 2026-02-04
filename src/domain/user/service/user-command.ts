@@ -40,8 +40,8 @@ import { IRedisExternal } from '../../../shared/interface/i-redis';
 import { ResidentAddressVO } from '../entity/vo/resident-address';
 import { clean, importResidentRowSchema } from '../dto/import-resident-row-dto';
 import { UserMapper } from '../user-mapper';
-import { FileManager } from '../../../shared/utils/file-manager';
 import { validate } from '../../../shared/utils/controller-util';
+import { IFileManager } from '../../../shared/interface/i-file-manager';
 
 export const createUserCommandService = (
   uow: IUnitOfWork,
@@ -50,6 +50,7 @@ export const createUserCommandService = (
   apartmentCommandRepo: IApartmentCommandRepo,
   stateCommandRepo: IStateCommandRepo,
   redisExternal: IRedisExternal,
+  fileManager: IFileManager,
 ) => {
   // 관리자
   const createSuperAdmin = async (dto: CreateSuperAdminDto): Promise<void> => {
@@ -447,7 +448,7 @@ export const createUserCommandService = (
     }
 
     // 1. 파일 가져오기
-    const data = await FileManager.getFile(key);
+    const data = await fileManager.getFile(key);
 
     // 2. 파일 타입 검증
     if (!data.body || typeof data.body === 'string') {
@@ -455,7 +456,7 @@ export const createUserCommandService = (
     }
 
     // 3. 파일 내용 가져오기
-    const contents = await FileManager.readFile(data.body as any);
+    const contents = await fileManager.readFile(data.body as any);
 
     // 4. 아파트 정보 가져오기
     const apartmentInfo = await apartmentCommandRepo.findById(apartmentId);
