@@ -1,0 +1,43 @@
+import { Request, Response, NextFunction, RequestHandler, Router } from 'express';
+import { z } from 'zod';
+import multer from 'multer';
+import { BusinessException } from '../exception/business-exception/business-exception';
+import { BusinessExceptionType } from '../exception/business-exception/exception-info';
+
+export const createBaseController = (path: string) => {
+  const basePath = path;
+  const router = Router();
+  return { basePath, router };
+};
+
+export const validate = <T extends z.ZodType>(schema: T, data: unknown) => {
+  const parsedData = schema.safeParse(data);
+  if (!parsedData.success) {
+    throw BusinessException({
+      type: BusinessExceptionType.INVALID_INPUT,
+      message: parsedData.error.issues[0].message,
+    });
+  }
+
+  return parsedData.data;
+};
+
+export const catchHandler = (handler: RequestHandler) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await handler(req, res, next);
+    } catch (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return next(
+            BusinessException({
+              type: BusinessExceptionType.FILE_SIZE_EXCEEDED,
+            }),
+          );
+        }
+      }
+
+      next(err);
+    }
+  };
+};

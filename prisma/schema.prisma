@@ -1,0 +1,247 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id
+  username     String?  @unique
+  name         String
+  email        String   @unique
+  contact      String   @unique
+  avatarUrl    String?
+  password     String?
+  role         String
+  joinedStatus String
+  refreshToken String?
+  version      Int
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  Address           Address?
+  UserApartmentLink UserApartmentLink[]
+  Complaint         Complaint[]
+  Polls             Polls[]
+  Notices           Notices[]
+  Notifications     Notifications[]
+  Comment           Comment[]
+  UserVoteOption    UserVoteOption[]
+
+  @@index([email])
+  @@index([joinedStatus])
+}
+
+model Apartment {
+  id                    String   @id
+  name                  String
+  address               String   @unique
+  description           String
+  officeNumber          String
+  buildingNumberFrom    Int
+  buildingNumberTo      Int
+  floorCountPerBuilding Int
+  unitCountPerFloor     Int
+  createdAt             DateTime
+  updatedAt             DateTime
+  version               Int      @default(1)
+
+  UserApartmentLink UserApartmentLink[]
+  complaint         Complaint[]
+  polls             Polls[]
+  notices           Notices[]
+}
+
+// todo: article include tag
+
+model UserApartmentLink {
+  userId      String
+  apartmentId String
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apartment Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  // 1. 아파트만 cascasde할때
+  // 사람1,2,3 => 롯데캐슬아파트
+  // 사람1 => 롯데캐슬 아파트 개별로 => 나옴 (롯데캐슬 아파트 사라짐)
+  // 사람 2,3 => 내가 살던 롯데캐슬아파트 어디감??
+
+  // 2. 유저를 cascade할때
+  // 사람1,2,3 => 롯데캐슬아파트
+  // 사람1 => 롯데캐슬 아파트 개별로 => 나옴 (사람1 사라짐)
+  // 사람2,3 => 롯데캐슬아파트 계속 존재  
+
+  @@id([userId, apartmentId])
+  @@index([apartmentId])
+}
+
+model Address {
+  userId        String  @id
+  isHouseholder Boolean // 프론트 쪽에서 string으로 받음
+  unit          Int
+  building      Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id
+  createdAt DateTime
+  updatedAt DateTime
+  content   String
+
+  userId String
+  author User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  complaintId String?
+  complaint   Complaint? @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+
+  noticeId String?
+  notice   Notices? @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+
+  @@index([complaintId])
+  @@index([noticeId])
+}
+
+model Complaint {
+  id         String          @id
+  createdAt  DateTime
+  updatedAt  DateTime
+  title      String
+  content    String
+  status     Complaintstatus
+  isPublic   Boolean
+  viewsCount Int
+  version    Int
+
+  apartmentId String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  userId      String
+  complainant User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  comment Comment[]
+
+  @@index([apartmentId])
+  @@index([userId])
+}
+
+enum Complaintstatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+model Options {
+  id     String @id
+  title  String
+  pollId String
+  poll   Polls  @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  UserVoteOptions UserVoteOption[]
+}
+
+model Polls {
+  id          String     @id
+  createdAt   DateTime
+  updatedAt   DateTime
+  title       String
+  content     String
+  status      PollStatus
+  startDate   DateTime
+  endDate     DateTime
+  apartmentId String
+  apartment   Apartment  @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  building    Int
+  userId      String
+  author      User       @relation(fields: [userId], references: [id])
+
+  version Int
+  options Options[]
+  UserVoteOptions UserVoteOption[]
+}
+
+enum PollStatus {
+  IN_PROGRESS
+  PENDING
+  CLOSED
+}
+
+model Events {
+  id        String   @id
+  startDate DateTime
+  endDate   DateTime
+
+  noticeId String  @unique
+  notice   Notices @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+}
+
+model Notices {
+  id          String         @id
+  createdAt   DateTime
+  updatedAt   DateTime
+  title       String
+  content     String
+  category    NoticeCategory
+  isPinned    Boolean
+  viewsCount   Int
+  apartmentId String
+  apartment   Apartment      @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  userId      String
+  author      User           @relation(fields: [userId], references: [id])
+  comment     Comment[]
+  version     Int
+  event       Events?
+}
+
+enum NoticeCategory {
+  MAINTENANCE
+  EMERGENCY
+  COMMUNITY
+  RESIDENT_VOTE
+  RESIDENT_COUNCIL
+  ETC
+}
+
+model Notifications {
+  id        String   @unique
+  content   String
+  isChecked Boolean
+  createdAt DateTime
+  userId    String?
+  receiver  User?    @relation(fields: [userId], references: [id])
+}
+
+model State {
+  id        String   @id
+  type      String
+  status    String
+  payload   Json
+}
+
+model UserVoteOption {
+  createdAt DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  optionId String
+  option   Options @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  pollId String
+  poll   Polls   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  @@id([userId, pollId]) 
+  @@index([optionId])
+}

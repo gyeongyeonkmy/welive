@@ -1,0 +1,44 @@
+import { Router } from 'express';
+import { PollHandler } from './poll-handler';
+import { Middlewares } from '../../../shared/interface/i-middlewares';
+import { catchHandler } from '../../../shared/utils/controller-util';
+
+export const registerPollRoutes = (
+  router: Router,
+  handler: PollHandler,
+  middlewares: Middlewares,
+) => {
+  router.get(
+    '/:pollId',
+    catchHandler(middlewares.auth.authenticate),
+    catchHandler(handler.getPoll),
+  );
+
+  router.get('/', catchHandler(middlewares.auth.authenticate), catchHandler(handler.getAllPolls));
+
+  router.post('/', catchHandler(middlewares.auth.authAdmin), catchHandler(handler.createPoll));
+
+  router.patch(
+    '/:pollId',
+    // catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handler.updatePoll),
+  );
+
+  router.delete(
+    '/:pollId',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handler.deletePoll),
+  );
+
+  router.post(
+    '/:pollId/options/:optionId/vote',
+    catchHandler(middlewares.auth.authenticate),
+    catchHandler(handler.vote),
+  );
+
+  router.delete(
+    '/:pollId/options/:optionId/vote',
+    catchHandler(middlewares.auth.authenticate),
+    catchHandler(handler.cancle),
+  );
+};

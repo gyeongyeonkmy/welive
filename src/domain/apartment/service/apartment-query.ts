@@ -1,0 +1,39 @@
+﻿import { viewApartmentDTO, viewApartmentsDTO } from '../dto/apartment-request';
+import { IApartmentQueryRepo } from '../interface/i-apartment-query';
+import { IRedisLocker } from '../../../shared/interface/i-redis-locker';
+import { redisKeys } from '../../../shared/utils/redis-keys';
+
+export const createApartmentQueryService = (
+  apartmentQueryRepo: IApartmentQueryRepo,
+  redisLocker: IRedisLocker,
+) => {
+  const getApartments = async (dto: viewApartmentsDTO) => {
+    const { key, lock } = redisKeys.apartmentsList(dto);
+    const apartments = await redisLocker.doWork({
+      key,
+      lockKey: lock,
+      redisLock: false,
+      work: () => apartmentQueryRepo.findAll(dto),
+    });
+    return apartments;
+  };
+
+  const getApartment = async (dto: viewApartmentDTO) => {
+    const { key, lock } = redisKeys.apartmentById(dto);
+
+    const apartment = await redisLocker.doWork({
+      key,
+      lockKey: lock,
+      work: () => apartmentQueryRepo.findById(dto.apartmentId),
+    });
+
+    return apartment;
+  };
+
+  return {
+    getApartments,
+    getApartment,
+  };
+};
+
+export type ApartmentQueryService = ReturnType<typeof createApartmentQueryService>;

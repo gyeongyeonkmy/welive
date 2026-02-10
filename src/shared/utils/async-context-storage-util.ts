@@ -1,0 +1,16 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { TxPrismaClient } from '../base-command-repo';
+
+const storage = new AsyncLocalStorage<TxPrismaClient>();
+
+export const asyncContextStorage = {
+  run: async <T>(data: TxPrismaClient, callback: () => Promise<T>) => {
+    const result = await storage.run(data, callback);
+    return result;
+  },
+
+  get: (): TxPrismaClient | undefined => {
+    const result = storage.getStore();
+    return result;
+  },
+};

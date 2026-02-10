@@ -1,0 +1,48 @@
+import { Router } from 'express';
+import { ResidentUserHandlers } from './resident-user-handler';
+import { Middlewares } from '../../../shared/interface/i-middlewares';
+import { catchHandler } from '../../../shared/utils/controller-util';
+
+export const registerResidentUserRoutes = (
+  router: Router,
+  handlers: ResidentUserHandlers,
+  middlewares: Middlewares,
+) => {
+  router.post('/', catchHandler(middlewares.auth.authAdmin), catchHandler(handlers.createResident));
+
+  router.get('/', catchHandler(middlewares.auth.authAdmin), catchHandler(handlers.getResidents));
+
+  router.get('/:id', catchHandler(middlewares.auth.authAdmin), catchHandler(handlers.getResident));
+
+  router.patch(
+    '/:id',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.updateResident),
+  );
+
+  router.delete(
+    '/:id',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.deleteResident),
+  );
+
+  router.get(
+    '/file/template',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.exportResidentTemplate),
+  );
+
+  router.post(
+    '/file/import',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(middlewares.fileUploader.csv),
+    catchHandler(middlewares.fileUploader.mapS3Path),
+    catchHandler(handlers.importResidentsFromCsv),
+  );
+
+  router.get(
+    '/file/export',
+    catchHandler(middlewares.auth.authAdmin),
+    catchHandler(handlers.exportResidents),
+  );
+};
