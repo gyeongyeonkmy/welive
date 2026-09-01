@@ -85,6 +85,7 @@ import { validate } from '../../../shared/utils/controller-util';
 import { AuthService } from '../auth-service';
 import { loginSchema, cookieTokenSchema } from '../dto/auth-request';
 import { Request, Response } from 'express';
+import { isVercelRuntime } from '../../../shared/utils/runtime';
 
 export const createAuthHandlers = (authService: AuthService, redisExternal: IRedisExternal) => {
   /**
@@ -92,12 +93,19 @@ export const createAuthHandlers = (authService: AuthService, redisExternal: IRed
    * - HTTP 환경 기준
    * - login / refresh / logout 전부 동일해야 브라우저가 같은 쿠키로 인식함
    */
-  const cookieOptions = {
-    httpOnly: true,
-    secure: false, // HTTPS 아니므로 false
-    sameSite: 'lax' as const,
-    path: '/',
-  };
+  const cookieOptions = isVercelRuntime()
+    ? {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none' as const,
+        path: '/',
+      }
+    : {
+        httpOnly: true,
+        secure: false, // HTTPS 아니므로 false
+        sameSite: 'lax' as const,
+        path: '/',
+      };
 
   const login = async (req: Request, res: Response) => {
     const dto = validate(loginSchema, req.body);
