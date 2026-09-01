@@ -4,7 +4,7 @@
   "description": "nodejs 백엔드 고급 프로젝트 - 위리브",
   "scripts": {
     "start": "node ./build/main.js",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "dev": "cross-env NODE_ENV=development nodemon --watch src --exec ts-node src/index.ts",
     "prod": "cross-env NODE_ENV=production node ./dist/index.js",
     "k6-test": "k6 run --no-connection-reuse=false src/test/k6/k6-test.js",
