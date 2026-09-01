@@ -5,6 +5,7 @@ import { NotificationQueryService } from '../service/notification-query';
 import { ClientManager } from '../../../clients';
 import { Role } from '../../user/entity/base-user';
 import { validate } from '../../../shared/utils/controller-util';
+import { isVercelRuntime } from '../../../shared/utils/runtime';
 
 export const createNotificationHandler = (
   notificationQueryService: NotificationQueryService,
@@ -20,6 +21,14 @@ export const createNotificationHandler = (
   };
 
   const getLiveNotification = async (req: Request, res: Response) => {
+    if (isVercelRuntime()) {
+      res.status(501).json({
+        message:
+          'SSE live notifications are disabled in the Vercel demo deployment. Use the notification list API or run the app locally for full realtime behavior.',
+      });
+      return;
+    }
+
     ClientManager.set({
       userId: req.user.userId,
       role: req.user.role as Role,

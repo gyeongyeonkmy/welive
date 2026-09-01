@@ -1,11 +1,39 @@
 import Redis from 'ioredis';
 import { getEnv } from './config';
 import { IRedisExternal } from './shared/interface/i-redis';
+import { isVercelRuntime } from './shared/utils/runtime';
+
+const createNoopRedisExternal = (): IRedisExternal => ({
+  get: async () => null,
+  getMany: async (keys) => keys.map(() => null),
+  set: async () => undefined,
+  setIfNotExist: async () => true,
+  del: async () => 0,
+  delifmatch: async () => true,
+  getMembersFromSet: async () => [],
+  addToSet: async () => 0,
+  removeMemberFromSet: async () => 0,
+  popFromSet: async () => [],
+  increase: async () => 0,
+  decrease: async () => 0,
+  quit: () => undefined,
+});
 
 export const createRedisExternal = (): IRedisExternal => {
+  const { REDIS_HOST, REDIS_PORT } = getEnv();
+
+  // ponytail: Vercel demo skips cache, locks, and deferred counters; add Redis when shared state matters.
+  if (isVercelRuntime() && (!REDIS_HOST || !REDIS_PORT)) {
+    return createNoopRedisExternal();
+  }
+
+  if (!REDIS_HOST || !REDIS_PORT) {
+    throw new Error('REDIS_HOST and REDIS_PORT are required outside the Vercel demo.');
+  }
+
   const redisClient = new Redis({
-    host: getEnv().REDIS_HOST,
-    port: getEnv().REDIS_PORT,
+    host: REDIS_HOST,
+    port: REDIS_PORT,
   });
 
   const get = (key: string) => {

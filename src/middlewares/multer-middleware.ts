@@ -4,8 +4,21 @@ import { BusinessExceptionType } from '../shared/exception/business-exception/ex
 import { UploadType } from '../shared/utils/file-manager';
 import { NextFunction, Request, Response } from 'express';
 import { IFileManager } from '../shared/interface/i-file-manager';
+import { isVercelRuntime } from '../shared/utils/runtime';
 
 export const createMulterMiddleware = (fileManager: IFileManager) => {
+  const ensureAvailable = (req: Request, res: Response, next: NextFunction) => {
+    if (isVercelRuntime()) {
+      res.status(501).json({
+        message:
+          'File upload features are disabled in the Vercel demo deployment. Run the app locally for the full file workflow.',
+      });
+      return;
+    }
+
+    next();
+  };
+
   const createUploader = (type: UploadType) =>
     multer({
       storage: fileManager.getStorage(type),
@@ -45,6 +58,7 @@ export const createMulterMiddleware = (fileManager: IFileManager) => {
   };
 
   return {
+    ensureAvailable,
     image: createUploader('image').single('avatarImage'),
     csv: createUploader('csv').single('file'),
     mapS3Path,

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { getEnv } from '../../config';
+import { getAwsEnv } from '../../config';
 import { S3Client } from '@aws-sdk/client-s3';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
@@ -22,18 +22,19 @@ export const FileStorage = {
   },
 
   createS3Storage: (type: UploadType) => {
+    const awsEnv = getAwsEnv();
     let filePath = '';
     const s3client = new S3Client({
-      region: getEnv().AWS_REGION,
+      region: awsEnv.AWS_REGION,
       credentials: {
-        accessKeyId: getEnv().AWS_ACCESS_KEY_ID,
-        secretAccessKey: getEnv().AWS_SECRET_ACCESS_KEY,
+        accessKeyId: awsEnv.AWS_ACCESS_KEY_ID,
+        secretAccessKey: awsEnv.AWS_SECRET_ACCESS_KEY,
       },
     });
 
     const s3Storage = multerS3({
       s3: s3client,
-      bucket: getEnv().AWS_S3_BUCKET_NAME,
+      bucket: awsEnv.AWS_S3_BUCKET_NAME,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'private',
       key: (req, file, callback) => {

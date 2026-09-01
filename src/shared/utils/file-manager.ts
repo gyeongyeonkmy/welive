@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getEnv } from '../../config';
+import { getAwsEnv, getEnv } from '../../config';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { FileStorage } from './file-storage';
 import { Readable } from 'stream';
@@ -52,8 +52,9 @@ export const FileManager = (): IFileManager => {
         contentLength: results.length,
       } as ContentType;
     } else {
+      const awsEnv = getAwsEnv();
       const command = new GetObjectCommand({
-        Bucket: getEnv().AWS_S3_BUCKET_NAME,
+        Bucket: awsEnv.AWS_S3_BUCKET_NAME,
         Key: filePath,
       });
 
@@ -95,8 +96,9 @@ export const FileManager = (): IFileManager => {
   };
 
   const getUrl = async (filePath: string) => {
+    const awsEnv = getAwsEnv();
     const command = new GetObjectCommand({
-      Bucket: getEnv().AWS_S3_BUCKET_NAME,
+      Bucket: awsEnv.AWS_S3_BUCKET_NAME,
       Key: filePath,
     });
 

@@ -1,5 +1,16 @@
 # 🧑‍💻 node.js 백엔드 팀 고급 프로젝트 - team2
 
+## Vercel Demo
+
+이 저장소는 이력서 첨부용 단일 Vercel 데모 배포를 지원합니다. 데모 배포에서는 HTTP/API 흐름 확인에 초점을 맞추며, 백그라운드 스케줄러와 SSE 기반 실시간 알림 전송은 비활성화됩니다.
+
+- Vercel 데모에서 확인 가능한 범위: 인증, CRUD, 목록 조회, 일반 API 호출
+- Vercel 데모에서 제한되는 범위: `setInterval` 기반 스케줄러, SSE 실시간 알림 전송, S3/파일 업로드 기반 기능
+- 전체 알림 아키텍처 확인 방법: 로컬 또는 상시 실행 런타임에서 [`src/index.ts`](./src/index.ts) 진입점으로 실행
+
+Vercel 배포 엔트리는 [`src/vercel.ts`](./src/vercel.ts)이며, Express 앱만 export 합니다.
+---
+
 ## QuickStart
 
 ### 1. 패키지 설치
@@ -39,7 +50,6 @@ npm run dev
 ```
 
 서버가 `http://localhost:4000`에서 실행됩니다.
-
 ---
 
 ## 👥 팀원 구성

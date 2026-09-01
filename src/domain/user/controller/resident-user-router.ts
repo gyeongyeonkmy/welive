@@ -29,12 +29,14 @@ export const registerResidentUserRoutes = (
   router.get(
     '/file/template',
     catchHandler(middlewares.auth.authAdmin),
+    catchHandler(middlewares.fileUploader.ensureAvailable),
     catchHandler(handlers.exportResidentTemplate),
   );
 
   router.post(
     '/file/import',
     catchHandler(middlewares.auth.authAdmin),
+    catchHandler(middlewares.fileUploader.ensureAvailable),
     catchHandler(middlewares.fileUploader.csv),
     catchHandler(middlewares.fileUploader.mapS3Path),
     catchHandler(handlers.importResidentsFromCsv),
